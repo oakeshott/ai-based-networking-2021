@@ -32,3 +32,8 @@ function error_handler() {
     python similarity.py --original ${SOURCE_PATH}/original/5-9 --received ${SOURCE_PATH}/received/${i} -o ${RESDIR}/issue --test-data --grayscale
   done
 }
+
+: "done" && {
+  set +x
+  echo "successful"
+}

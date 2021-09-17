@@ -23,7 +23,7 @@ parser.add_argument('-l', '--log', default='logs',
         help='Log directory')
 parser.add_argument('-o', '--model_dir', default='models',
         help='Model directory')
-parser.add_argument('--model_path', default='model.mdl',
+parser.add_argument('--model-path', default='model.mdl',
         help='model path')
 parser.add_argument('-b', '--batchsize', default=32, type=int,
         help='Log directory')
