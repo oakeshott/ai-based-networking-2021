@@ -1,1 +1,3 @@
-# ai-based-networking-2021
+# AI-based Networking ジュニアチャレンジ
+
+

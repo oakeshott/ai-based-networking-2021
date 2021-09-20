@@ -24,9 +24,11 @@ parser.add_argument('-l', '--log', default='logs',
 parser.add_argument('-o', '--model_dir', default='models',
         help='Model directory')
 parser.add_argument('--model-path', default='model.mdl',
-        help='model path')
+        help='Model path')
 parser.add_argument('-b', '--batchsize', default=32, type=int,
         help='Log directory')
+parser.add_argument('--log-seq', default=1, type=int,
+        help='Log sequence')
 parser.add_argument('--fold', default=4, type=int,
         help='Fold split')
 parser.add_argument('--seed', default=1, type=int,
@@ -113,7 +115,6 @@ class SimilarityDataset(Dataset):
             df = self.read_file(path, sequence_length)
 
         if self.transform:
-            # for metric in metrics + target_metrics:
             for metric in metrics:
                 df[[metric]] = self.transform(df[[metric]], metric)
 
@@ -142,8 +143,6 @@ class SimilarityDataset(Dataset):
     def read_files(self, files, sequence_length):
         li_df = []
         for filename in tqdm(files):
-            # if not "0GHp" in filename:
-            #     continue
             df = self.read_file(filename, sequence_length)
             li_df.append(df)
         df = pd.concat(li_df)
@@ -178,6 +177,7 @@ def train():
     seed           = args.seed
     fold_split     = args.fold
     batch_size     = args.batchsize
+    log_seq        = args.log_seq
 
     set_seed(seed)
 
@@ -264,14 +264,15 @@ def train():
 
                 throughput_loss, loss_rate_loss = (l1loss_function(throughput_scores, throughput_targets).item(), l1loss_function(loss_rate_scores, loss_rate_targets).item())
 
-            print(f"Epoch: [{epoch}/{max_epoches}] train/valid loss: {train_loss:.4f} / {valid_loss:.4f} throughput/loss rate: {throughput_loss:.4f} / {loss_rate_loss:.4f}")
-
             writer.add_scalars(f"train_fold{i+1}", {
                 "train_loss": train_loss,
                 "valid_loss": valid_loss,
                 "throughput_loss": throughput_loss,
                 "packet_loss_rate_loss": loss_rate_loss
                 }, epoch)
+
+            if epoch <= 10 or epoch % log_seq == 0:
+                print(f"Epoch: [{epoch}/{max_epoches}] train/valid loss: {train_loss:.4f} / {valid_loss:.4f} throughput/loss rate: {throughput_loss:.4f} / {loss_rate_loss:.4f}")
 
             if epoch % 100 == 0:
                 torch.save(model.state_dict(), f"./{model_dir}/fold{i + 1}_{epoch}.mdl")
