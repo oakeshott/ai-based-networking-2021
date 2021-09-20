@@ -2,7 +2,7 @@
 
 set -Ceuo pipefail
 
-K=4
+K=5
 function error_handler() {
   set +x
   echo "something went wrong" >&2

@@ -331,7 +331,7 @@ def test():
         loss_rate_targets  = test_targets[:, 1]
 
         throughput_loss, loss_rate_loss = (loss_function(throughput_scores, throughput_targets).item(), loss_function(loss_rate_scores, loss_rate_targets).item())
-        print(f"model: {model_path} throughput / loss rate: {throughput_loss:.4f} / {loss_rate_loss:.4f}")
+        print(f"input data: {similarity_dir} model: {model_path} throughput / loss rate: {throughput_loss:.4f} / {loss_rate_loss:.4f}")
 
 def main():
     if args.train:
