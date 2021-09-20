@@ -19,7 +19,7 @@ parser.add_argument('--basename', default='frame',
 parser.add_argument('-j', '--n-jobs', default=1, type=int,
         help='Number of jobs')
 parser.add_argument('--test-data', action="store_true",
-        help='')
+        help='active flag if preprocessing test data')
 
 args = parser.parse_args()
 

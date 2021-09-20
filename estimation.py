@@ -34,9 +34,9 @@ parser.add_argument('--fold', default=4, type=int,
 parser.add_argument('--seed', default=1, type=int,
         help='seed')
 parser.add_argument('--test', action="store_true",
-        help='')
+        help='test mode')
 parser.add_argument('--train', action="store_true",
-        help='')
+        help='train mode')
 
 args = parser.parse_args()
 

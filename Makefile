@@ -1,9 +1,5 @@
-
-main:
-	python main.py
-
 train:
-	python estimation.py -i similarity_measures/train --train
+	./scripts/train.sh
 
 test:
 	./scripts/test.sh
@@ -18,3 +14,5 @@ download:
 	wget --http-user=$(USER) --http-passwd=$(PASSWORD) https://www.ieice.org/cs/rising/jpn/2021/itu-nec/dataset_and_issue.tar.gz
 	tar zxvf dataset_and_issue.tar.gz
 
+probe:
+	./scripts/probe_info.sh

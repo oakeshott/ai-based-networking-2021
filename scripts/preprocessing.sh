@@ -27,7 +27,7 @@ function error_handler() {
 : "preprocessing received video data" && {
   SOURCE_PATH=${SOURCE}/dataset
   TARGET_PATH=${TARGET}/dataset
-  python preprocessing.py -i ${SOURCE_PATH}/received -o ${TARGET_PATH}/received/ --resize ${RESIZE} -j 10 --grayscale
+  python preprocessing.py -i ${SOURCE_PATH}/received -o ${TARGET_PATH}/received/ --resize ${RESIZE} -j 5 --grayscale
 }
 
 : "preprocess original video data" && {
