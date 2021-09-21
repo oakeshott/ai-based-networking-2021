@@ -169,7 +169,7 @@ def set_seed(seed):
 
 def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    transformer = Transformer(is_train=True)
+    # transformer = Transformer(is_train=True)
 
     similarity_dir = args.input
     log_dir        = args.log
@@ -283,7 +283,7 @@ def train():
 def test():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    transformer = Transformer(is_train=False)
+    # transformer = Transformer(is_train=False)
     similarity_dir = args.input
     log_dir        = args.log
     model_dir      = args.model_dir
