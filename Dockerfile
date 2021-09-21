@@ -1,4 +1,4 @@
-FROM python:3.8.0
+FROM python:3.8.6
 USER root
 
 RUN apt-get update -y
@@ -18,4 +18,3 @@ WORKDIR /ai-based-networking
 COPY requirements.txt ${PWD}
 
 RUN pip3 install --no-cache-dir -r requirements.txt
-RUN tar zxvf similarity_measures.tar.gz

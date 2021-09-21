@@ -16,3 +16,10 @@ download:
 
 probe:
 	./scripts/probe_info.sh
+
+docker:
+	docker-compose up -d
+
+clean:
+	./scripts/kill-docker.sh
+
