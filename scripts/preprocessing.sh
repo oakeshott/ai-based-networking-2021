@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 set -Ceuo pipefail
 
@@ -21,25 +21,25 @@ function error_handler() {
 : "preprocess original video data" && {
   SOURCE_PATH=${SOURCE}/dataset
   TARGET_PATH=${TARGET}/dataset
-  python preprocessing.py -i ${SOURCE_PATH}/original -o ${TARGET_PATH}/original/ --resize ${RESIZE} -j 3  --grayscale
+  python src/preprocessing.py -i ${SOURCE_PATH}/original -o ${TARGET_PATH}/original/ --resize ${RESIZE} -j 3  --grayscale
 }
 
 : "preprocessing received video data" && {
   SOURCE_PATH=${SOURCE}/dataset
   TARGET_PATH=${TARGET}/dataset
-  python preprocessing.py -i ${SOURCE_PATH}/received -o ${TARGET_PATH}/received/ --resize ${RESIZE} -j 5 --grayscale
+  python src/preprocessing.py -i ${SOURCE_PATH}/received -o ${TARGET_PATH}/received/ --resize ${RESIZE} -j 5 --grayscale
 }
 
 : "preprocess original video data" && {
   SOURCE_PATH=${SOURCE}/issue
   TARGET_PATH=${TARGET}/issue
-  python preprocessing.py -i ${SOURCE_PATH}/original -o ${TARGET_PATH}/original/ --resize ${RESIZE} -j 1 --grayscale
+  python src/preprocessing.py -i ${SOURCE_PATH}/original -o ${TARGET_PATH}/original/ --resize ${RESIZE} -j 1 --grayscale
 }
 
 : "preprocessing received video data" && {
   SOURCE_PATH=${SOURCE}/issue
   TARGET_PATH=${TARGET}/issue
-  python preprocessing.py -i ${SOURCE_PATH}/received -o ${TARGET_PATH}/received/ --resize ${RESIZE} -j 2 --grayscale
+  python src/preprocessing.py -i ${SOURCE_PATH}/received -o ${TARGET_PATH}/received/ --resize ${RESIZE} -j 2 --grayscale
 }
 
 : "done" && {

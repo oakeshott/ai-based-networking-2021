@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 set -Ceuo pipefail
 
@@ -21,7 +21,7 @@ function error_handler() {
   do
     for k in `seq 1 ${K}`
     do
-      python estimation.py -i ${INPUT_DIR}/similarity_${i}.json --model-path models/fold${k}_1000.mdl --test
+      python src/estimation.py -i ${INPUT_DIR}/similarity_${i}.json --model-path models/fold${k}_1000.mdl --test
     done
   done
 }

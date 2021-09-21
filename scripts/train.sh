@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 set -Ceuo pipefail
 
@@ -17,7 +17,7 @@ function error_handler() {
   echo "train..."
   INPUT_DIR=similarity_measures/train
   KFOLD=5
-  python estimation.py -i ${INPUT_DIR} --train -l logs -o models -b 32 --log-seq 1 --fold ${KFOLD} --seed 1
+  python src/estimation.py -i ${INPUT_DIR} --train -l logs -o models -b 32 --log-seq 1 --fold ${KFOLD} --seed 1
 }
 
 : "done" && {
