@@ -72,8 +72,7 @@ class Transformer:
         if self.is_train:
             return self.fit_transform(df, metric)
         else:
-            df[:] = self.transformer[metric].transform(df)
-            return df
+            return self.transformer[metric].transform(df)
 
     def inverse_transform(self, scaled, metric):
         return self.transformer[metric].inverse_transform(scaled)
@@ -114,9 +113,9 @@ class SimilarityDataset(Dataset):
         else:
             df = self.read_file(path, sequence_length)
 
-        if self.transform:
-            for metric in metrics:
-                df[[metric]] = self.transform(df[[metric]], metric)
+        # if self.transform:
+        #     for metric in metrics:
+        #         df[[metric]] = self.transform(df[[metric]], metric)
 
         df.index = df[["video_type", "throughput", "loss_rate", "interval"]]
         indices = df[["video_type", "throughput", "loss_rate", "interval"]].index.unique()
@@ -169,7 +168,7 @@ def set_seed(seed):
 
 def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # transformer = Transformer(is_train=True)
+    transformer = Transformer(is_train=True)
 
     similarity_dir = args.input
     log_dir        = args.log
@@ -181,16 +180,16 @@ def train():
 
     set_seed(seed)
 
-    sequence_length = 1000
+    sequence_length = 3000
     hidden_dim      = 128
     num_layers      = 2
-    max_epoches     = 1000
+    max_epoches     = 2000
 
     train_and_valid_dataset = SimilarityDataset(
             path=similarity_dir,
             sequence_length=sequence_length,
             device=device,
-            transform=None
+            transform=transformer
             )
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
@@ -217,10 +216,10 @@ def train():
 
         model = NetworkStateEstimationFromVideoStreaming(input_dim, target_dim, sequence_length, hidden_dim).to(device)
 
-        loss_function = nn.SmoothL1Loss()
+        loss_function = nn.L1Loss()
         l1loss_function = nn.L1Loss()
 
-        optimizer = optim.Adam(model.parameters(), lr=1e-3)
+        optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
         for epoch in range(1, max_epoches + 1):
             train_loss = 0
@@ -283,7 +282,7 @@ def train():
 def test():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # transformer = Transformer(is_train=False)
+    transformer = Transformer(is_train=False)
     similarity_dir = args.input
     log_dir        = args.log
     model_dir      = args.model_dir
@@ -293,16 +292,16 @@ def test():
 
     set_seed(seed)
 
-    sequence_length = 1000
+    sequence_length = 3000
     hidden_dim      = 128
     num_layers      = 2
-    max_epoches     = 1000
+    max_epoches     = 2000
 
     test_dataset = SimilarityDataset(
             path=similarity_dir,
             sequence_length=sequence_length,
             device=device,
-            transform=None,
+            transform=transformer,
             is_train=False
             )
 
@@ -330,8 +329,15 @@ def test():
         throughput_targets = test_targets[:, 0]
         loss_rate_targets  = test_targets[:, 1]
 
-        throughput_loss, loss_rate_loss = (loss_function(throughput_scores, throughput_targets).item(), loss_function(loss_rate_scores, loss_rate_targets).item())
-        print(f"input data: {similarity_dir} model: {model_path} throughput / loss rate: {throughput_loss:.4f} / {loss_rate_loss:.4f}")
+    throughput = throughput_scores.mean()
+    loss_rate  = loss_rate_scores.mean()
+    # throughput = transformer.inverse_transform(pd.DataFrame(throughput_scores), "throughput").squeeze().mean()
+    # loss_rate  = transformer.inverse_transform(pd.DataFrame(loss_rate_scores), "loss_rate").squeeze().mean()
+
+    print(f"input data: {similarity_dir} model: {model_path} throughput / loss rate: {throughput:.4f} / {loss_rate:.4f}")
+    filename = "logs/result.txt"
+    with open(filename, "a") as f:
+        f.write(f"{similarity_dir}\t{throughput:.4f}\t{loss_rate:.4f}\n")
 
 def main():
     if args.train:
