@@ -20,6 +20,9 @@ probe:
 docker:
 	docker-compose up -d
 
+decompress:
+	tar zxvf similarity_measures.tar.gz
+
 clean:
 	./scripts/kill-docker.sh
 
