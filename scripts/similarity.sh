@@ -17,7 +17,7 @@ function error_handler() {
 : "similarity measures" && {
   SOURCE_PATH=./img/dataset/
   RESDIR=similarity/train
-  python src/similarity.py --original ${SOURCE_PATH}/original --received ${SOURCE_PATH}/received/ -o ${RESDIR} --n-jobs 10 --grayscale
+  python src/similarity.py --original ${SOURCE_PATH}/original --received ${SOURCE_PATH}/received/ -o ${RESDIR} --n-jobs 20 --grayscale
 }
 
 : "similarity measures" && {

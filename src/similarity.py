@@ -38,8 +38,8 @@ def calc_similarity_measures(src, dst, grayscale=False):
     return ssim, psnr
 
 def calc_all_frame_similarity(org_path, rev_path, rev_dir, dst_dir, grayscale=False):
-    throughput = rev_dir.split('_')[1]
-    loss_rate  = rev_dir.split('_')[2]
+    throughput = rev_dir.split('_')[-2]
+    loss_rate  = rev_dir.split('_')[-1]
     throughput = int(throughput[0:4])
     loss_rate  = float(loss_rate[0] + '.' + loss_rate[1:])
     print(throughput)
