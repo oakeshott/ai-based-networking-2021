@@ -20,24 +20,31 @@ parser.add_argument('-j', '--n-jobs', default=1, type=int,
         help='Number of jobs')
 parser.add_argument('--test-data', action="store_true",
         help='active flag if preprocessing test data')
+parser.add_argument('--grayscale', action="store_true",
+        help='Grayscale')
 
 args = parser.parse_args()
 
-def calc_similarity_measures(src, dst):
-    # src_img = cv2.imread(src)
-    # dst_img = cv2.imread(dst)
-    # ssim = structural_similarity(src_img, dst_img, multichannel=True)
-    src_img = cv2.imread(src, cv2.COLOR_BGR2GRAY)
-    dst_img = cv2.imread(dst, cv2.COLOR_BGR2GRAY)
-    ssim = structural_similarity(src_img, dst_img)
+def calc_similarity_measures(src, dst, grayscale=False):
+    if grayscale:
+        src_img = cv2.imread(src, cv2.COLOR_BGR2GRAY)
+        dst_img = cv2.imread(dst, cv2.COLOR_BGR2GRAY)
+        ssim = structural_similarity(src_img, dst_img)
+    else:
+        src_img = cv2.imread(src)
+        dst_img = cv2.imread(dst)
+        ssim = structural_similarity(src_img, dst_img, multichannel=True)
     psnr = cv2.PSNR(src_img, dst_img)
     return ssim, psnr
 
-def calc_all_frame_similarity(org_path, rev_path, org_dir, rev_dir, dst_dir):
+def calc_all_frame_similarity(org_path, rev_path, rev_dir, dst_dir, grayscale=False):
     throughput = rev_dir.split('_')[1]
     loss_rate  = rev_dir.split('_')[2]
-    throughput = int(throughput[:len(throughput)-4])
+    throughput = int(throughput[0:4])
     loss_rate  = float(loss_rate[0] + '.' + loss_rate[1:])
+    print(throughput)
+
+    org_dir = rev_dir.split("_")[0]
 
     org_frame_files = glob.glob(os.path.join(os.path.join(org_path, org_dir), '*'))
     rev_frame_files = glob.glob(os.path.join(os.path.join(rev_path, rev_dir), '*'))
@@ -53,7 +60,7 @@ def calc_all_frame_similarity(org_path, rev_path, org_dir, rev_dir, dst_dir):
     filename = os.path.join(dst_dir, f"similarity_{rev_dir}.json")
     rets = []
     for frame_idx, (org_frame_file, rev_frame_file) in enumerate(zip(org_frame_files, rev_frame_files)):
-        ssim, psnr = calc_similarity_measures(org_frame_file, rev_frame_file)
+        ssim, psnr = calc_similarity_measures(org_frame_file, rev_frame_file, grayscale)
         ret = {
                 "video_type": org_dir,
                 "loss_rate": loss_rate,
@@ -66,9 +73,9 @@ def calc_all_frame_similarity(org_path, rev_path, org_dir, rev_dir, dst_dir):
     with open(filename, "w") as f:
         json.dump(rets, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
 
-def call_calc_all_frame_similarity_func(org_path, rev_path, org_dir, rev_dirs, dst_dir):
+def call_calc_all_frame_similarity_func(org_path, rev_path, rev_dirs, dst_dir, grayscale=False):
     for rev_dir in tqdm(rev_dirs):
-        calc_all_frame_similarity(org_path, rev_path, org_dir, rev_dir, dst_dir)
+        calc_all_frame_similarity(org_path, rev_path, rev_dir, dst_dir, grayscale)
 
 def split_list(l, n):
     for idx in range(0, len(l), n):
@@ -86,34 +93,20 @@ def preprocessing_train_data():
 
     li_rev_dirs = []
 
-    # tmp = []
-    # filters = ["0GHpTnbnTZs", "7AvbTPa2Tv0", "8jTJXuxVmVc", "9JbdHUpGkdE"]
-    # for org_dir in org_dirs:
-    #     for f in filters:
-    #         if not org_dir in f:
-    #             tmp.append(org_dir)
-    # org_dirs = tmp
-    # tmp = []
-    # for org_dir in rev_dirs:
-    #     for f in filters:
-    #         if not org_dir in f:
-    #             tmp.append(org_dir)
-    # rev_dirs = tmp
-    # org_dirs.sort()
-    # rev_dirs.sort()
-
     for org_dir in org_dirs:
         tmp = []
         for rev_dir in rev_dirs:
-            if org_dir in rev_dir:
+            if not org_dir in rev_dir:
                 tmp.append(rev_dir)
         li_rev_dirs.append(tmp)
 
-    for org_dir, _rev_dirs in zip(org_dirs, li_rev_dirs):
+
+    for _rev_dirs in li_rev_dirs:
         os.makedirs(dst_dir, exist_ok=True)
 
         jobs = list(split_list(_rev_dirs, len(_rev_dirs) // n_jobs))
-        Parallel(n_jobs=n_jobs)(delayed(call_calc_all_frame_similarity_func)(org_path, rev_path, org_dir, rev_dirs, dst_dir) for rev_dirs in jobs)
+        print(jobs)
+        Parallel(n_jobs=n_jobs)(delayed(call_calc_all_frame_similarity_func)(org_path, rev_path, rev_dirs, dst_dir, args.grayscale) for rev_dirs in jobs)
 
 def preprocessing_test_data():
     org_path = args.original
@@ -141,7 +134,7 @@ def preprocessing_test_data():
     filename = os.path.join(dst_dir, f"similarity_{idx}.json")
     rets = []
     for frame_idx, (org_frame_file, rev_frame_file) in tqdm(enumerate(zip(org_frame_files, rev_frame_files))):
-        ssim, psnr = calc_similarity_measures(org_frame_file, rev_frame_file)
+        ssim, psnr = calc_similarity_measures(org_frame_file, rev_frame_file, args.grayscale)
         ret = {
                 "video_type": f"test_{idx}",
                 "loss_rate": loss_rate,
