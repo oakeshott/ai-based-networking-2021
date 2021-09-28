@@ -17,7 +17,7 @@ function error_handler() {
 : "similarity measures" && {
   SOURCE_PATH=./img/dataset/
   RESDIR=similarity/train
-  python src/similarity.py --original ${SOURCE_PATH}/original --received ${SOURCE_PATH}/received/ -o ${RESDIR}/train --n-jobs 10 --grayscale
+  python src/similarity.py --original ${SOURCE_PATH}/original --received ${SOURCE_PATH}/received/ -o ${RESDIR} --n-jobs 10 --grayscale
 }
 
 : "similarity measures" && {
@@ -25,11 +25,11 @@ function error_handler() {
   RESDIR=similarity/test
   for i in `seq 0 4`
   do
-    python src/similarity.py --original ${SOURCE_PATH}/original/0-4 --received ${SOURCE_PATH}/received/${i} -o ${RESDIR}/issue --test-data --grayscale
+    python src/similarity.py --original ${SOURCE_PATH}/original/0-4 --received ${SOURCE_PATH}/received/${i} -o ${RESDIR} --test-data --grayscale
   done
   for i in `seq 5 9`
   do
-    python src/similarity.py --original ${SOURCE_PATH}/original/5-9 --received ${SOURCE_PATH}/received/${i} -o ${RESDIR}/issue --test-data --grayscale
+    python src/similarity.py --original ${SOURCE_PATH}/original/5-9 --received ${SOURCE_PATH}/received/${i} -o ${RESDIR} --test-data --grayscale
   done
 }
 
