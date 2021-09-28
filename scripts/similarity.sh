@@ -16,13 +16,13 @@ function error_handler() {
 
 : "similarity measures" && {
   SOURCE_PATH=./img/dataset/
-  RESDIR=similarity/train
+  RESDIR=similarity_measures/train
   python src/similarity.py --original ${SOURCE_PATH}/original --received ${SOURCE_PATH}/received/ -o ${RESDIR} --n-jobs 20 --grayscale
 }
 
 : "similarity measures" && {
   SOURCE_PATH=./img/issue/
-  RESDIR=similarity/test
+  RESDIR=similarity_measures/test
   for i in `seq 0 4`
   do
     python src/similarity.py --original ${SOURCE_PATH}/original/0-4 --received ${SOURCE_PATH}/received/${i} -o ${RESDIR} --test-data --grayscale

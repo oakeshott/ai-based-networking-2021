@@ -38,13 +38,15 @@ def calc_similarity_measures(src, dst, grayscale=False):
     return ssim, psnr
 
 def calc_all_frame_similarity(org_path, rev_path, rev_dir, dst_dir, grayscale=False):
-    throughput = rev_dir.split('_')[-2]
-    loss_rate  = rev_dir.split('_')[-1]
+    split_list = rev_dir.split("_")
+    throughput = split_list[-2]
+    loss_rate  = split_list[-1]
     throughput = int(throughput[0:4])
     loss_rate  = float(loss_rate[0] + '.' + loss_rate[1:])
-    print(throughput)
-
-    org_dir = rev_dir.split("_")[0]
+    if len(split_list) == 3:
+        org_dir = split_list[0]
+    else:
+        org_dir = split_list[0] + "_" + split_list[1]
 
     org_frame_files = glob.glob(os.path.join(os.path.join(org_path, org_dir), '*'))
     rev_frame_files = glob.glob(os.path.join(os.path.join(rev_path, rev_dir), '*'))
