@@ -32,6 +32,9 @@ function error_handler() {
     done
   done
 }
+: "aggregation" && {
+  python src/aggregation.py
+}
 
 : "done" && {
   set +x
