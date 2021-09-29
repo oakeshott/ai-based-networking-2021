@@ -98,16 +98,14 @@ def preprocessing_train_data():
     for org_dir in org_dirs:
         tmp = []
         for rev_dir in rev_dirs:
-            if not org_dir in rev_dir:
+            if org_dir in rev_dir:
                 tmp.append(rev_dir)
         li_rev_dirs.append(tmp)
-
 
     for _rev_dirs in li_rev_dirs:
         os.makedirs(dst_dir, exist_ok=True)
 
         jobs = list(split_list(_rev_dirs, len(_rev_dirs) // n_jobs))
-        print(jobs)
         Parallel(n_jobs=n_jobs)(delayed(call_calc_all_frame_similarity_func)(org_path, rev_path, rev_dirs, dst_dir, args.grayscale) for rev_dirs in jobs)
 
 def preprocessing_test_data():
