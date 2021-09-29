@@ -7,16 +7,24 @@
 
 ## プログラムの実行方法
 
+### Dockerを利用して実行
+
+```bash
+docker compose up -d
+docker exec -it ai-based-networking bash
+```
+
 ### Pythonパッケージのインストール
 
-```
+```bash
 pip install -r requirements.txt
 ```
+
 - (Pytorch cpu版をインストールするための定義ファイルであるため注意)
 
 ### 利用データのDL
 
-```
+```bash
 # 動画ファイルのDLと解凍
 # USER，PASSWORDはそれぞれ指定の値を入れる
 $ make download USER=${USER} PASSWORD=${PASSWORD}
@@ -24,7 +32,7 @@ $ make download USER=${USER} PASSWORD=${PASSWORD}
 
 ### 訓練・テストデータの作成
 
-```
+```bash
 # 画像データの前処理 (リサイズ，グレースケール化)
 $ make preprocessing
 # PNSRとSSIMの計算
@@ -37,7 +45,7 @@ $ make similarity
 
 ### 学習とテスト
 
-```
+```bash
 # 学習
 $ make train
 # テスト
