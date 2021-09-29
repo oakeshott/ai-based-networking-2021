@@ -2,7 +2,6 @@
 
 set -Ceuo pipefail
 
-KFOLD=4
 function error_handler() {
   set +x
   echo "something went wrong" >&2
@@ -23,7 +22,8 @@ function error_handler() {
 
 : "test" && {
   echo "testing..."
-  INPUT_DIR=similarity_measures/test/issue
+  KFOLD=5
+  INPUT_DIR=similarity_measures/test
   for i in `seq 0 9`
   do
     for k in `seq 1 ${KFOLD}`

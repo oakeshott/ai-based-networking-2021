@@ -16,7 +16,7 @@ function error_handler() {
 : "train" && {
   echo "train..."
   INPUT_DIR=similarity_measures/train
-  KFOLD=4
+  KFOLD=5
   python src/estimation.py -i ${INPUT_DIR} --train -l logs -o models -b 32 --log-seq 1 --fold ${KFOLD} --seed 1
 }
 

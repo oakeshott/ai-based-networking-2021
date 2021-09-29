@@ -29,6 +29,8 @@ parser.add_argument('-b', '--batchsize', default=32, type=int,
         help='Log directory')
 parser.add_argument('--log-seq', default=1, type=int,
         help='Log sequence')
+parser.add_argument('--sequence-length', default=1000, type=int,
+        help='Sequence length')
 parser.add_argument('--fold', default=4, type=int,
         help='Fold split')
 parser.add_argument('--seed', default=1, type=int,
@@ -54,7 +56,7 @@ class NetworkStateEstimationFromVideoStreaming(nn.Module):
         self.dropout = nn.Dropout(p=0.1)
 
     def forward(self, x):
-        x = x.view(-1, self.input_dim * self.sequence_length)
+        x   = x.view(-1, self.input_dim * self.sequence_length)
         out = self.fc1(x)
         out = self.relu(out)
         out = self.dropout(out)
@@ -117,11 +119,11 @@ class SimilarityDataset(Dataset):
         #     for metric in metrics:
         #         df[[metric]] = self.transform(df[[metric]], metric)
 
-        df.index = df[["video_type", "throughput", "loss_rate", "interval"]]
-        indices = df[["video_type", "throughput", "loss_rate", "interval"]].index.unique()
+        df.index   = df[["video_type", "throughput", "loss_rate", "interval"]]
+        indices    = df[["video_type", "throughput", "loss_rate", "interval"]].index.unique()
         grouped_df = df.groupby(["video_type", "throughput", "loss_rate", "interval"])
 
-        self.data = []
+        self.data   = []
         self.target = []
         for index in tqdm(indices):
             series = grouped_df.get_group(index)
@@ -168,7 +170,8 @@ def set_seed(seed):
 
 def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    transformer = Transformer(is_train=True)
+    transformer = None
+    # transformer = Transformer(is_train=True)
 
     similarity_dir = args.input
     log_dir        = args.log
@@ -180,7 +183,7 @@ def train():
 
     set_seed(seed)
 
-    sequence_length = 3000
+    sequence_length = args.sequence_length
     hidden_dim      = 128
     num_layers      = 2
     max_epoches     = 2000
@@ -217,7 +220,7 @@ def train():
         model = NetworkStateEstimationFromVideoStreaming(input_dim, target_dim, sequence_length, hidden_dim).to(device)
 
         loss_function = nn.L1Loss()
-        l1loss_function = nn.L1Loss()
+        l1_loss_function = nn.L1Loss()
 
         optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
@@ -256,12 +259,13 @@ def train():
 
                 val_scores  = valid_scores.to('cpu').detach().numpy().astype(np.float32)
                 val_targets = valid_targets.to('cpu').detach().numpy().astype(np.float32)
+
                 throughput_scores = valid_scores[:, 0]
                 loss_rate_scores  = valid_scores[:, 1]
                 throughput_targets = valid_targets[:, 0]
                 loss_rate_targets  = valid_targets[:, 1]
 
-                throughput_loss, loss_rate_loss = (l1loss_function(throughput_scores, throughput_targets).item(), l1loss_function(loss_rate_scores, loss_rate_targets).item())
+                throughput_loss, loss_rate_loss = (l1_loss_function(throughput_scores, throughput_targets).item(), l1_loss_function(loss_rate_scores, loss_rate_targets).item())
 
             writer.add_scalars(f"train_fold{i+1}", {
                 "train_loss": train_loss,
@@ -282,7 +286,8 @@ def train():
 def test():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    transformer = Transformer(is_train=False)
+    transformer = None
+    # transformer = Transformer(is_train=False)
     similarity_dir = args.input
     log_dir        = args.log
     model_dir      = args.model_dir
@@ -292,7 +297,7 @@ def test():
 
     set_seed(seed)
 
-    sequence_length = 3000
+    sequence_length = args.sequence_length
     hidden_dim      = 128
     num_layers      = 2
     max_epoches     = 2000
@@ -337,7 +342,7 @@ def test():
     print(f"input data: {similarity_dir} model: {model_path} throughput / loss rate: {throughput:.4f} / {loss_rate:.4f}")
     filename = "logs/result.txt"
     with open(filename, "a") as f:
-        f.write(f"{similarity_dir}\t{throughput:.4f}\t{loss_rate:.4f}\n")
+        f.write(f"{similarity_dir}\t{model_path}\t{throughput:.4f}\t{loss_rate:.4f}\n")
 
 def main():
     if args.train:

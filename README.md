@@ -1,8 +1,8 @@
-# AI-based Networking ジュニアチャレンジ
+# AI-based Networking ジュニアチャレンジサンプルプログラム
 
 ## 前提 (動作確認済みの環境)
 
-- Python 3.8.6を想定
+- Python 3.8.6
 - Ubuntu 18.04.5 LTS
 
 ## プログラムの実行方法
