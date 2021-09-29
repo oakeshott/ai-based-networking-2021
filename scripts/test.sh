@@ -16,7 +16,7 @@ function error_handler() {
   fi
   if [ -e logs/result.txt ]; then
     rm logs/result.txt
-    touch result.txt
+    touch logs/result.txt
   fi
 }
 
