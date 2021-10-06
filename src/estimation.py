@@ -99,7 +99,8 @@ class SimilarityDataset(Dataset):
         self.sequence_length = sequence_length
         self.transform = transform
 
-        if device is None: self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if device is None:
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         else:
             self.device = device
 
