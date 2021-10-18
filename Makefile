@@ -18,7 +18,7 @@ probe:
 	./scripts/probe_info.sh
 
 docker:
-	docker-compose up -d
+	docker-compose build && docker-compose up -d
 
 decompress:
 	tar zxvf similarity_measures.tar.gz
