@@ -10,7 +10,8 @@
 ### Dockerを利用して実行
 
 ```bash
-docker compose up -d
+docker-compose build
+docker-compose up -d
 docker exec -it ai-based-networking bash
 ```
 
